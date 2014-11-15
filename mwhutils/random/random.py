@@ -25,12 +25,10 @@ def rstate(rng=None):
     given this will be passed back.
     """
     if rng is None:
-        rng = np.random.mtrand._rand
+        return np.random.mtrand._rand
     elif isinstance(rng, int):
-        rng = np.random.RandomState(rng)
-    elif not isinstance(rng, np.random.RandomState):
-        raise ValueError('unknown seed given to rstate')
-    return rng
+        return np.random.RandomState(rng)
+    raise ValueError('unknown seed given to rstate')
 
 
 def uniform(bounds, n, rng=None):
