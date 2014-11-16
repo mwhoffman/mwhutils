@@ -26,6 +26,8 @@ def rstate(rng=None):
     """
     if rng is None:
         return np.random.mtrand._rand
+    elif isinstance(rng, np.random.RandomState):
+        return rng
     elif isinstance(rng, int):
         return np.random.RandomState(rng)
     raise ValueError('unknown seed given to rstate')
