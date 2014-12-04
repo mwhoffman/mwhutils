@@ -10,3 +10,13 @@ I/we find a more cohesive description.
 [![Coverage Status](https://coveralls.io/repos/mwhoffman/mwhutils/badge.png?branch=master)]
 (https://coveralls.io/r/mwhoffman/mwhutils?branch=master)
 
+Installation
+============
+
+The easiest way to install this package is by running
+
+    pip install git+https://github.com/mwhoffman/mwhutils.git
+
+Alternatively the package can be installed by cloning the repository and using
+`setup.py` directly.
+
