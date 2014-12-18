@@ -14,7 +14,7 @@ from ._sobol import i4_sobol_generate
 import numpy as np
 
 # exported symbols
-__all__ = ['rstate', 'uniform', 'latin', 'sobol']
+__all__ = ['rstate', 'uniform', 'latin', 'sobol', 'grid']
 
 
 def rstate(rng=None):
@@ -84,5 +84,20 @@ def sobol(bounds, n, rng=None):
     skip = rng.randint(100, 200)
     w = bounds[:, 1] - bounds[:, 0]
     X = bounds[:, 0] + w * i4_sobol_generate(d, n, skip).T
+
+    return X
+
+
+def grid(bounds, n, rng=None):
+    """
+    Generate a regular grid within the specified region, given by `bounds`,
+    a list of [(lo,hi), ..] bounds in each dimension. `n` represents the number
+    of points along each dimension.
+    """
+    bounds = np.array(bounds, ndmin=2, copy=False)
+    d = len(bounds)
+
+    X = np.meshgrid(*(np.linspace(a, b, n) for a, b in bounds))
+    X = np.reshape(X, (d, -1)).T
 
     return X
