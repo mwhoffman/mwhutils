@@ -88,7 +88,7 @@ def sobol(bounds, n, rng=None):
     return X
 
 
-def grid(bounds, n, rng=None):
+def grid(bounds, n):
     """
     Generate a regular grid within the specified region, given by `bounds`,
     a list of [(lo,hi), ..] bounds in each dimension. `n` represents the number
@@ -97,7 +97,11 @@ def grid(bounds, n, rng=None):
     bounds = np.array(bounds, ndmin=2, copy=False)
     d = len(bounds)
 
-    X = np.meshgrid(*(np.linspace(a, b, n) for a, b in bounds))
-    X = np.reshape(X, (d, -1)).T
+    if d == 1:
+        X = np.linspace(bounds[0, 0], bounds[0, 1], n)
+        X = np.reshape(X, (-1, 1))
+    else:
+        X = np.meshgrid(*(np.linspace(a, b, n) for a, b in bounds))
+        X = np.reshape(X, (d, -1)).T
 
     return X
