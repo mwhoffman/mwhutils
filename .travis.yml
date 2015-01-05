@@ -16,7 +16,7 @@ before_install:
     - "pip install python-coveralls"
 
 script:
-    - "nosetests  --with-coverage --cover-inclusive --cover-package=mwhutils"
+    - "nosetests"
 
 after_success:
     - "coveralls"
