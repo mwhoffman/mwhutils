@@ -20,6 +20,8 @@ The easiest way to install this package is by running
 
     pip install git+https://github.com/mwhoffman/mwhutils.git
 
-Alternatively the package can be installed by cloning the repository and using
-`setup.py` directly.
+The package can also be installed by cloning the repository and running `python
+setup.py install` from the main directory. Alternatively running `pip install -e
+.` will install the package globally but allow it to be edited from the cloned
+directory.
 
