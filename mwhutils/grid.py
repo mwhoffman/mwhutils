@@ -1,36 +1,18 @@
 """
-Sample from low-discrepancy sequences.
+Generate samples from a (random) grid. This includes uniform samples, an actual
+grid, and low-discrepancy sequences.
 """
 
-# future imports
 from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
 
-# local imports
+from .random import rstate
 from ._sobol import i4_sobol_generate
 
-# global imports
 import numpy as np
 
-# exported symbols
-__all__ = ['rstate', 'uniform', 'latin', 'sobol', 'grid']
-
-
-def rstate(rng=None):
-    """
-    Return a numpy RandomState object. If an integer value is given then a new
-    RandomState will be returned with this seed. If None is given then the
-    global numpy state will be returned. If an already instantiated state is
-    given this will be passed back.
-    """
-    if rng is None:
-        return np.random.mtrand._rand
-    elif isinstance(rng, np.random.RandomState):
-        return rng
-    elif isinstance(rng, int):
-        return np.random.RandomState(rng)
-    raise ValueError('unknown seed given to rstate')
+__all__ = ['uniform', 'latin', 'sobol', 'regular']
 
 
 def uniform(bounds, n, rng=None):
@@ -88,7 +70,7 @@ def sobol(bounds, n, rng=None):
     return X
 
 
-def grid(bounds, n):
+def regular(bounds, n):
     """
     Generate a regular grid within the specified region, given by `bounds`,
     a list of [(lo,hi), ..] bounds in each dimension. `n` represents the number
