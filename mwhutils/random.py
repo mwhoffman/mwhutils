@@ -6,9 +6,6 @@ from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
 
-from .random import rstate
-from ._sobol import i4_sobol_generate
-
 import numpy as np
 
 __all__ = ['rstate']
@@ -28,5 +25,3 @@ def rstate(rng=None):
     elif isinstance(rng, int):
         return np.random.RandomState(rng)
     raise ValueError('unknown seed given to rstate')
-
-
