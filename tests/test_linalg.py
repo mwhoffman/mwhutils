@@ -18,7 +18,7 @@ def test_add_diagonal():
     A = np.random.rand(5, 5)
     B = A.copy()
     C = linalg.add_diagonal(B, 1, copy=True)
-    D = linalg.add_diagonal(B, 1)
+    D = linalg.add_diagonal(B, 1, copy=False)
 
     nt.assert_equal(C, A + np.eye(5))
     nt.assert_equal(D, A + np.eye(5))
