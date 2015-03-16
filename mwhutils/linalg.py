@@ -18,7 +18,7 @@ __all__ = ['add_diagonal', 'cholesky', 'cholesky_inverse', 'cholesky_update',
            'solve_triangular', 'solve_cholesky']
 
 
-def add_diagonal(A, d, copy=False):
+def add_diagonal(A, d, copy=True):
     """
     Return the matrix `A` where its diagonal has had the vector `d` added to
     it. If `copy` is False perform the addition in place.
