@@ -25,29 +25,17 @@ class axis(object):
     def set_ylabel(self, xlabel):
         self.ax.set_xlabel(xlabel)
 
-    def get_ylim(self, ymin_=None, ymax_=None):
-        ymin, ymax = self.ax.axis()[2:4]
-        if ymin_ is not None:
-            ymin = min(ymin, ymin_)
-        if ymax_ is not None:
-            ymax = max(ymax, ymax_)
-        return ymin, ymax
+    def set_lim(self, xmin=None, xmax=None, ymin=None, ymax=None):
+        xmin, xmax, ymin, ymax = self.get_lim(xmin, xmax, ymin, ymax)
+        self.ax.axis((xmin, xmax, ymin, ymax))
 
-    def set_ylim(self, ymin=None, ymax=None):
-        ymin, ymax = self.get_ylim(ymin, ymax)
-        self.ax.axis(ymin=ymin, ymax=ymax)
-
-    def get_xlim(self, xmin_=None, xmax_=None):
-        xmin, xmax = self.ax.axis()[0:2]
-        if xmin_ is not None:
-            xmin = min(xmin, xmin_)
-        if xmax_ is not None:
-            xmax = max(xmax, xmax_)
-        return xmin, xmax
-
-    def set_xlim(self, xmin=None, xmax=None):
-        xmin, xmax = self.get_xlim(xmin, xmax)
-        self.ax.axis(xmin=xmin, xmax=xmax)
+    def get_lim(self, xmin=None, xmax=None, ymin=None, ymax=None):
+        xmin_, xmax_, ymin_, ymax_ = self.ax.axis()
+        xmin = xmin if (xmin is None) else min(xmin, xmin_)
+        xmax = xmax if (xmax is None) else max(xmax, xmax_)
+        ymin = ymin if (ymin is None) else min(ymin, ymin_)
+        ymax = ymax if (ymax is None) else max(ymax, ymax_)
+        return xmin, xmax, ymin, ymax
 
     def remove_ticks(self, xticks=True, yticks=True):
         if xticks:
@@ -89,14 +77,14 @@ class figure(object):
             fig = pl.figure(fig)
         elif not isinstance(fig, pl.Figure):
             raise ValueError('fig must be a Figure instance or an integer')
-        self.fig = fig
-        self.fig.clf()
-        self.rows = rows
-        self.cols = cols
-        self.subplots = [None for _ in xrange(rows*cols)]
+        self._fig = fig
+        self._fig.clf()
+        self._rows = rows
+        self._cols = cols
+        self._subplots = [None for _ in xrange(rows*cols)]
 
     def __getitem__(self, a):
-        if self.rows == 1 or self.cols == 1:
+        if self._rows == 1 or self._cols == 1:
             if not isinstance(a, int):
                 raise ValueError('single row/column figures can only be '
                                  'indexed by an integer')
@@ -104,45 +92,41 @@ class figure(object):
             if not isinstance(a, tuple) or len(a) != 2:
                 raise ValueError('grid-based figures must be indexed by '
                                  'two integers')
-            a = self.cols * a[0] + a[1]
-        ax = self.subplots[a]
+            a = self._cols * a[0] + a[1]
+        ax = self._subplots[a]
         if ax is None:
-            ax = axis(self.fig.add_subplot(self.rows, self.cols, a+1))
-            self.subplots[a] = ax
+            ax = axis(self._fig.add_subplot(self._rows, self._cols, a+1))
+            self._subplots[a] = ax
         return ax
 
-    def remove_ticks(self):
-        for ax in self.subplots:
-            if ax is not None:
-                ax.remove_ticks()
-
     def draw(self):
-        for ax in self.subplots:
+        for ax in self._subplots:
             if ax is not None:
                 ax.draw()
 
-        for x in xrange(self.rows):
+        for x in xrange(self._rows):
             ymin, ymax, axes = np.inf, -np.inf, []
-            for y in xrange(self.cols):
-                ax = self.subplots[self.cols * x + y]
+            for y in xrange(self._cols):
+                ax = self._subplots[self._cols * x + y]
                 if ax is not None:
                     axes.append(ax)
-                    ymin, ymax = ax.get_ylim(ymin, ymax)
+                    ymin, ymax = ax.get_lim(ymin=ymin, ymax=ymax)[2:]
             for ax in axes:
-                ax.set_ylim(ymin, ymax)
+                ax.set_lim(ymin=ymin, ymax=ymax)
             for ax in axes[1:]:
                 ax.remove_ticks(xticks=False)
 
-        for y in xrange(self.cols):
+        for y in xrange(self._cols):
             xmin, xmax, axes = np.inf, -np.inf, []
-            for x in xrange(self.rows):
-                ax = self.subplots[self.cols * x + y]
+            for x in xrange(self._rows):
+                ax = self._subplots[self._cols * x + y]
                 if ax is not None:
                     axes.append(ax)
-                    xmin, xmax = ax.get_xlim(xmin, xmax)
+                    xmin, xmax = ax.get_lim(xmin=xmin, xmax=xmax)[:2]
             for ax in axes:
-                ax.set_xlim(xmin, xmax)
+                ax.set_lim(xmin=xmin, xmax=xmax)
             for ax in axes[0:-1]:
                 ax.remove_ticks(yticks=False)
 
-        self.fig.canvas.draw()
+        self._fig.canvas.draw()
+        pl.show(block=False)
