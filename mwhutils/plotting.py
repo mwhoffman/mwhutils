@@ -17,19 +17,27 @@ class axis(object):
         self.ax = ax
 
     def set_title(self, title):
+        """Set the title of the axis."""
         self.ax.set_title(title)
 
     def set_xlabel(self, xlabel):
+        """Set the x-axis label."""
         self.ax.set_xlabel(xlabel)
 
     def set_ylabel(self, xlabel):
+        """Set the y-axis label."""
         self.ax.set_xlabel(xlabel)
 
     def set_lim(self, xmin=None, xmax=None, ymin=None, ymax=None):
+        """Set the limits of the axis."""
         xmin, xmax, ymin, ymax = self.get_lim(xmin, xmax, ymin, ymax)
         self.ax.axis((xmin, xmax, ymin, ymax))
 
     def get_lim(self, xmin=None, xmax=None, ymin=None, ymax=None):
+        """
+        Get the limits of the axis. If any of xmin, xmax, ymin, or ymax are
+        given, then return the min/max of these limits.
+        """
         xmin_, xmax_, ymin_, ymax_ = self.ax.axis()
         xmin = xmin if (xmin is None) else min(xmin, xmin_)
         xmax = xmax if (xmax is None) else max(xmax, xmax_)
@@ -38,15 +46,22 @@ class axis(object):
         return xmin, xmax, ymin, ymax
 
     def remove_ticks(self, xticks=True, yticks=True):
+        """Remove the x/y ticks of the axis."""
         if xticks:
             self.ax.set_xticklabels([])
         if yticks:
             self.ax.set_yticklabels([])
 
     def plot(self, x, y, **kwargs):
+        """Add a simple plot to the axis."""
         self.ax.plot(x, y, **kwargs)
 
     def plot_banded(self, x, y, lo=None, hi=None):
+        """
+        Add a plot with additional bands between lo and hi to the axis. If lo
+        is None it will default to zero and if hi is None it will default to
+        zero.
+        """
         lo = np.zeros_like(y) if (lo is None) else lo
         hi = y if (hi is None) else hi
         lines = self.ax.plot(x, y)
@@ -55,12 +70,15 @@ class axis(object):
         self.ax.fill_between(x, lo, hi, color=color, alpha=alpha)
 
     def scatter(self, x, y):
+        """Add a scatter plot to the axis."""
         self.ax.scatter(x, y, marker='o', s=30, lw=1, facecolors='none')
 
     def vline(self, x):
+        """Add a vertical line to the axis at x."""
         self.ax.axvline(x, ls='--', color='r')
 
     def hline(self, y):
+        """Add a horizontal line to the axis at y."""
         self.ax.axhline(y, ls='--', color='r')
 
     def draw(self):
@@ -82,6 +100,13 @@ class figure(object):
         self._rows = rows
         self._cols = cols
         self._subplots = [None for _ in xrange(rows*cols)]
+
+        # if the grid is 1-by-1 just expose the axis methods
+        if rows == cols == 1:
+            ax = self[0]
+            for name in dir(ax):
+                if name[0] != '_' and name != 'draw':
+                    setattr(self, name, getattr(ax, name))
 
     def __getitem__(self, a):
         if self._rows == 1 or self._cols == 1:
