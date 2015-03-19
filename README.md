@@ -10,8 +10,8 @@ I/we find a more cohesive description.
 
 [travis]: https://travis-ci.org/mwhoffman/mwhutils
 [coveralls]: https://coveralls.io/r/mwhoffman/mwhutils
-[travis-shield]: https://img.shields.io/travis/mwhoffman/mwhutils.svg?style=flat
-[coveralls-shield]: https://img.shields.io/coveralls/mwhoffman/mwhutils.svg?style=flat
+[travis-shield]: https://img.shields.io/travis/mwhoffman/mwhutils/master.svg?style=flat
+[coveralls-shield]: https://img.shields.io/coveralls/mwhoffman/mwhutils/master.svg?style=flat
 
 Installation
 ============
