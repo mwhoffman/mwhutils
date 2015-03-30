@@ -63,11 +63,18 @@ class Axis(object):
             self._ax.set_yticklabels([])
         self._draw()
 
-    def scatter(self, x, y):
+    def scatter(self, x, y, alpha=1):
         """
         Add a scatter plot to the axis.
         """
-        self._ax.scatter(x, y, marker='o', s=30, lw=1, facecolors='none')
+        kwargs = {}
+        kwargs['s'] = 30
+        kwargs['lw'] = 1
+        kwargs['marker'] = 'o'
+        kwargs['facecolors'] = 'none'
+        kwargs['alpha'] = alpha
+
+        self._ax.scatter(x, y, **kwargs)
         self._draw()
 
     def plot(self, x, y):
@@ -192,3 +199,18 @@ def figure(fig=None, rows=1, cols=1, hold=False):
         return Axis(fig.gca(), hold)
     else:
         return Figure(fig, rows, cols, hold)
+
+
+def plot_pairs(samples, names=None, fig=None):
+    samples = np.array(samples, ndmin=2)
+    _, d = samples.shape
+    names = ['' for _ in xrange(d)] if (names is None) else names
+    fig = figure(fig, d-1, d-1)
+    for i in xrange(d):
+        for j in xrange(i+1, d):
+            fig[j-1, i].scatter(samples[:, i], samples[:, j], alpha=0.1)
+            if i == 0:
+                fig[j-1, i].set_ylabel(names[j])
+            if j == d-1:
+                fig[j-1, i].set_xlabel(names[i])
+    return fig
