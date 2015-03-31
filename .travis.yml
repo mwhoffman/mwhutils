@@ -16,7 +16,7 @@ before_install:
     - "pip install python-coveralls"
 
 script:
-    - "nosetests"
+    - "nosetests tests"
 
 after_success:
     - "coveralls"
