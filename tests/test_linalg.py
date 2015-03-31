@@ -56,6 +56,7 @@ def test_cholesky_update():
     L1 = linalg.cholesky(A[:3, :3])
     x1 = linalg.solve_triangular(L1, b[:3])
 
+    L2 = linalg.cholesky_update(L1, A[3:, :3], A[3:, 3:])
     L2, x2 = linalg.cholesky_update(L1, A[3:, :3], A[3:, 3:], x1, b[3:])
 
     nt.assert_allclose(L, L2)
