@@ -45,6 +45,23 @@ def test_cholesky():
     nt.assert_raises(linalg.LinAlgError, linalg.cholesky, A)
 
 
+def test_cholesky_update():
+    A = np.random.rand(5, 5)
+    A = linalg.add_diagonal(np.dot(A, A.T), 1)
+    b = np.random.rand(5)
+
+    L = linalg.cholesky(A)
+    x = linalg.solve_triangular(L, b)
+
+    L1 = linalg.cholesky(A[:3, :3])
+    x1 = linalg.solve_triangular(L1, b[:3])
+
+    L2, x2 = linalg.cholesky_update(L1, A[3:, :3], A[3:, 3:], x1, b[3:])
+
+    nt.assert_allclose(L, L2)
+    nt.assert_allclose(x, x2)
+
+
 def test_cholesky_inverse():
     A = np.random.rand(5, 5)
     A = linalg.add_diagonal(np.dot(A, A.T), 1)
