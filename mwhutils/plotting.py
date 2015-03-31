@@ -10,18 +10,23 @@ import numpy as np
 import matplotlib.pyplot as pl
 
 __all__ = ['figure']
+__all__ += ['plot_pairs']
+__all__ += ['show']
 
 
 class Axis(object):
-    def __init__(self, ax, hold=False, hook=None):
+    def __init__(self, ax, hook=None):
         self._ax = ax
         self._lim = (None, None, None, None)
-        self._hold = hold
         self._hook = (lambda: None) if (hook is None) else hook
+        self._hold = False
 
         # pre-figure business
         self._ax.spines['top'].set_visible(False)
         self._ax.spines['right'].set_visible(False)
+
+    def hold(self, hold=True):
+        self._hold = hold
 
     def set_title(self, title):
         """
@@ -118,20 +123,21 @@ class Axis(object):
         self._ax.axis('tight')
         self._ax.axis(self._lim)
         self._hook()
-        if (not self._hold) and pl.isinteractive():
+        if not self._hold and pl.isinteractive():
             self.draw()
 
     def draw(self):
+        self._hold = False
         self._ax.figure.canvas.draw()
 
 
 class Figure(object):
-    def __init__(self, fig=None, rows=1, cols=1, hold=False):
+    def __init__(self, fig=None, rows=1, cols=1):
         self._fig = fig
         self._rows = rows
         self._cols = cols
-        self._hold = hold
         self._axes = [None for _ in xrange(rows*cols)]
+        self._hold = False
 
     def __getitem__(self, a):
         if self._rows == 1 or self._cols == 1:
@@ -144,8 +150,9 @@ class Figure(object):
         axis = self._axes[a]
         if axis is None:
             ax = self._fig.add_subplot(self._rows, self._cols, a+1)
-            axis = Axis(ax, self._hold, self._hook)
+            axis = Axis(ax, self._hook)
             self._axes[a] = axis
+        axis.hold(axis._hold or self._hold)
         return axis
 
     def _hook(self):
@@ -181,11 +188,18 @@ class Figure(object):
             for ax in axes[0:-1]:
                 ax.set_xticklabels([])
 
+    def hold(self, hold=True):
+        self._hold = hold
+
     def draw(self):
+        self._hold = False
+        for axis in self._axes:
+            if axis is not None:
+                axis.hold(False)
         self._fig.canvas.draw()
 
 
-def figure(fig=None, rows=1, cols=1, hold=False):
+def figure(fig=None, rows=1, cols=1):
     if fig is None:
         fig = pl.figure()
     elif isinstance(fig, int):
@@ -196,16 +210,19 @@ def figure(fig=None, rows=1, cols=1, hold=False):
     fig.clf()
 
     if rows == cols == 1:
-        return Axis(fig.gca(), hold)
+        return Axis(fig.gca())
     else:
-        return Figure(fig, rows, cols, hold)
+        return Figure(fig, rows, cols)
 
 
 def plot_pairs(samples, names=None, fig=None):
     samples = np.array(samples, ndmin=2)
     _, d = samples.shape
     names = ['' for _ in xrange(d)] if (names is None) else names
+
     fig = figure(fig, d-1, d-1)
+    fig.hold()
+
     for i in xrange(d):
         for j in xrange(i+1, d):
             fig[j-1, i].scatter(samples[:, i], samples[:, j], alpha=0.1)
@@ -213,4 +230,10 @@ def plot_pairs(samples, names=None, fig=None):
                 fig[j-1, i].set_ylabel(names[j])
             if j == d-1:
                 fig[j-1, i].set_xlabel(names[i])
+
+    fig.draw()
     return fig
+
+
+def show():
+    pl.show()
