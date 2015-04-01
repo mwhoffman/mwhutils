@@ -9,9 +9,7 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as pl
 
-__all__ = ['figure']
-__all__ += ['plot_pairs']
-__all__ += ['show']
+__all__ = ['figure', 'plot_pairs', 'show']
 
 
 class Axis(object):
@@ -24,9 +22,8 @@ class Axis(object):
         # pre-figure business
         self._ax.spines['top'].set_visible(False)
         self._ax.spines['right'].set_visible(False)
-
-    def hold(self, hold=True):
-        self._hold = hold
+        self._ax.get_xaxis().tick_bottom()
+        self._ax.get_yaxis().tick_left()
 
     def set_title(self, title):
         """
@@ -53,9 +50,7 @@ class Axis(object):
         """
         Set the limits of the axis.
         """
-        self._lim = tuple(a if (b is None) else b
-                          for (a, b) in
-                          zip(self._lim, (xmin, xmax, ymin, ymax)))
+        self._lim = (xmin, xmax, ymin, ymax)
         self._draw()
 
     def remove_ticks(self, xticks=True, yticks=True):
@@ -126,13 +121,21 @@ class Axis(object):
         if not self._hold and pl.isinteractive():
             self.draw()
 
+    def hold(self, hold=True):
+        self._hold = hold
+
+    def clear(self):
+        self._ax.cla()
+        self._draw()
+
     def draw(self):
         self._hold = False
         self._ax.figure.canvas.draw()
+        self._ax.figure.show(warn=False)
 
 
 class Figure(object):
-    def __init__(self, fig=None, rows=1, cols=1):
+    def __init__(self, fig, rows, cols):
         self._fig = fig
         self._rows = rows
         self._cols = cols
@@ -191,23 +194,26 @@ class Figure(object):
     def hold(self, hold=True):
         self._hold = hold
 
+    def clear(self):
+        self._fig.clf()
+        self._axes = [None for _ in self._axes]
+
     def draw(self):
         self._hold = False
         for axis in self._axes:
             if axis is not None:
                 axis.hold(False)
         self._fig.canvas.draw()
+        self._fig.show(warn=False)
 
 
-def figure(fig=None, rows=1, cols=1):
-    if fig is None:
-        fig = pl.figure()
-    elif isinstance(fig, int):
-        fig = pl.figure(fig)
-    else:
-        raise ValueError('figure identifier must be an integer')
-
+def figure(num=None, rows=1, cols=1):
+    toolbar = pl.rcParams['toolbar']
+    pl.rcParams['toolbar'] = 'None'
+    fig = pl.figure(num, facecolor='white')
+    fig.set_tight_layout(True)
     fig.clf()
+    pl.rcParams['toolbar'] = toolbar
 
     if rows == cols == 1:
         return Axis(fig.gca())
@@ -236,4 +242,4 @@ def plot_pairs(samples, names=None, fig=None):
 
 
 def show():
-    pl.show()
+    pl.show(not pl.isinteractive())

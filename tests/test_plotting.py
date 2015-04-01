@@ -38,15 +38,14 @@ def test_single():
     fig.remove_ticks()
     fig.draw()
     mp.show()
+    fig.clear()
 
 
 def test_grid():
     x = np.linspace(0, 2*np.pi, 500)
     fig = mp.figure(rows=2)
-    fig[0].plot(x, np.sin(x))
-
-    nt.assert_raises(ValueError, mp.figure, 'a')
     nt.assert_raises(ValueError, fig.__getitem__, 'a')
+    fig[0].plot(x, np.sin(x))
 
     fig = mp.figure(rows=2, cols=2)
     nt.assert_raises(ValueError, fig.__getitem__, 'a')
@@ -57,6 +56,7 @@ def test_grid():
     fig[1, 0].plot(x, np.sin(x))
     fig[1, 1].plot(x, np.sin(x))
     fig.draw()
+    fig.clear()
 
 
 def test_plot_pairs():
