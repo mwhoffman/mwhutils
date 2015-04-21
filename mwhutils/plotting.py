@@ -25,26 +25,39 @@ class Axis(object):
         self._ax.get_xaxis().tick_bottom()
         self._ax.get_yaxis().tick_left()
 
-    def set_title(self, title):
-        """
-        Set the title of the axis.
-        """
+    ### AXIS PROPERTIES =======================================================
+
+    @property
+    def title(self):
+        """Get/set the title of the axis."""
+        return self._ax.get_title()
+
+    @property
+    def xlabel(self):
+        """Get/set the x-axis label."""
+        self._ax.get_xlabel()
+
+    @property
+    def ylabel(self):
+        """Get/set the y-axis label."""
+        self._ax.get_ylabel()
+
+    @title.setter
+    def title(self, title):
         self._ax.set_title(title)
         self._draw()
 
-    def set_xlabel(self, xlabel):
-        """
-        Set the x-axis label.
-        """
+    @xlabel.setter
+    def xlabel(self, xlabel):
         self._ax.set_xlabel(xlabel)
         self._draw()
 
-    def set_ylabel(self, ylabel):
-        """
-        Set the y-axis label.
-        """
+    @ylabel.setter
+    def ylabel(self, ylabel):
         self._ax.set_ylabel(ylabel)
         self._draw()
+
+    ### UTILITY METHODS =======================================================
 
     def set_lim(self, xmin=None, xmax=None, ymin=None, ymax=None):
         """
@@ -63,16 +76,18 @@ class Axis(object):
             self._ax.set_yticklabels([])
         self._draw()
 
-    def scatter(self, x, y, alpha=1):
+    ### PLOTTING METHODS ======================================================
+
+    def scatter(self, x, y, marker='o', color='k', alpha=1):
         """
         Add a scatter plot to the axis.
         """
-        kwargs = {}
-        kwargs['s'] = 30
-        kwargs['lw'] = 1
-        kwargs['marker'] = 'o'
-        kwargs['facecolors'] = 'none'
-        kwargs['alpha'] = alpha
+        kwargs = dict(lw=1.5, marker=marker, color=color, alpha=alpha)
+        if marker is 'o':
+            kwargs['s'] = 30
+            kwargs['facecolors'] = 'none'
+        else:
+            kwargs['s'] = 40
 
         self._ax.scatter(x, y, **kwargs)
         self._draw()
@@ -233,9 +248,9 @@ def plot_pairs(samples, names=None, fig=None):
         for j in xrange(i+1, d):
             fig[j-1, i].scatter(samples[:, i], samples[:, j], alpha=0.1)
             if i == 0:
-                fig[j-1, i].set_ylabel(names[j])
+                fig[j-1, i].ylabel = names[j]
             if j == d-1:
-                fig[j-1, i].set_xlabel(names[i])
+                fig[j-1, i].xlabel = names[i]
 
     fig.draw()
     return fig
