@@ -27,11 +27,15 @@ def test_single():
     fig.plot_banded(x, x, 1)
     fig.plot_banded(x, x, 1, 2)
     fig.scatter(x, x)
+    fig.scatter(x, x, marker='x')
     fig.hline(0.5)
     fig.vline(0.5)
-    fig.set_title('foo')
-    fig.set_xlabel('bar')
-    fig.set_ylabel('baz')
+    fig.title = 'foo'
+    fig.xlabel = 'bar'
+    fig.ylabel = 'baz'
+    _ = fig.title
+    _ = fig.xlabel
+    _ = fig.ylabel
     fig.set_lim(0, 1, 0, 1)
     fig.hold()
     fig.remove_ticks(False, False)
