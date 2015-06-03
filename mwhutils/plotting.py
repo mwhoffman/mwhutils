@@ -92,14 +92,17 @@ class Axis(object):
         self._ax.scatter(x, y, **kwargs)
         self._draw()
 
-    def plot(self, x, y):
+    def plot(self, x, y=None, color=None, alpha=1):
         """
         Add a simple plot to the axis.
         """
-        self._ax.plot(x, y)
+        if y is None:
+            y = x
+            x = np.arange(len(y))
+        self._ax.plot(x, y, lw=2, color=color, alpha=alpha)
         self._draw()
 
-    def plot_banded(self, x, y, a=None, b=None):
+    def plot_banded(self, x, y, a=None, b=None, label=''):
         if a is None and b is None:
             lo = np.zeros_like(y)
             hi = y
@@ -109,7 +112,7 @@ class Axis(object):
         else:
             lo = y - a
             hi = y + b
-        lines = self._ax.plot(x, y)
+        lines = self._ax.plot(x, y, lw=2, label=label)
         color = lines[0].get_color()
         alpha = 0.25
         self._ax.fill_between(x, lo, hi, color=color, alpha=alpha)
@@ -132,6 +135,7 @@ class Axis(object):
     def _draw(self):
         self._ax.axis('tight')
         self._ax.axis(self._lim)
+        self._ax.legend()
         self._hook()
         if not self._hold and pl.isinteractive():
             self.draw()
