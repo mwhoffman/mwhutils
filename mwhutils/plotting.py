@@ -135,7 +135,7 @@ class Axis(object):
     def _draw(self):
         self._ax.axis('tight')
         self._ax.axis(self._lim)
-        self._ax.legend()
+        self._ax.legend(loc='best')
         self._hook()
         if not self._hold and pl.isinteractive():
             self.draw()
@@ -226,10 +226,10 @@ class Figure(object):
         self._fig.show(warn=False)
 
 
-def figure(num=None, rows=1, cols=1):
+def figure(num=None, rows=1, cols=1, figsize=None):
     toolbar = pl.rcParams['toolbar']
     pl.rcParams['toolbar'] = 'None'
-    fig = pl.figure(num, facecolor='white')
+    fig = pl.figure(num, facecolor='white', figsize=figsize)
     fig.set_tight_layout(True)
     fig.clf()
     pl.rcParams['toolbar'] = toolbar
